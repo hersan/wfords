@@ -12,7 +12,7 @@ class WordGenerator
 
     private array $lettersFound = [];
 
-    private array $foundWords = [];
+    //private array $foundWords = [];
 
     public function __construct(Dictionary $dictionary)
     {
@@ -35,11 +35,36 @@ class WordGenerator
 
     public function getWords(): array
     {
-        $this->findWordsFrom(
+        $dictionaryWords = $this->getDictionaryWords();
+        $foundWords = [];
+
+        foreach ($dictionaryWords as $word) {
+            $letters = $this->getLettersFromString();
+            $chars = $this->wordToChars($word);
+            $isValid = true;
+
+            foreach ($chars as $char) {
+                if(in_array($char, $letters)) {
+                    if (($key = array_search($char, $letters)) !== false) {
+                        unset($letters[$key]);
+                    }
+                }else{
+                    $isValid = false;
+                }
+            }
+
+            if ($isValid) {
+                $foundWords[] = $word;
+            }
+        }
+
+        return $foundWords;
+
+        /*$this->findWordsFrom(
             $this->getDictionaryWords()
         );
 
-        return $this->getFoundWords();
+        return $this->getFoundWords();*/
     }
 
     private function getLettersFromString(): array
@@ -72,9 +97,11 @@ class WordGenerator
     private function checkLettersInWord(array $chars, array $letters): void
     {
         foreach ($chars as $char) {
-            if (($key = array_search($char, $letters)) !== false) {
-                $this->lettersFound[] = $key;
-                unset($letters[$key]);
+            if(in_array($char, $letters)) {
+                if (($key = array_search($char, $letters)) !== false) {
+                    $this->lettersFound[] = $key;
+                    unset($letters[$key]);
+                }
             }
         }
     }
