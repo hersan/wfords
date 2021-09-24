@@ -28,8 +28,8 @@ class Dictionary
 
     public function path(): string
     {
-        return storage_path(
-            $this->filepath ??= 'app/public/dictionary/dictionary.txt'
+        return app_path(
+            $this->filepath ??= 'dictionary/dictionary.txt'
         );
     }
 
