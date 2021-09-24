@@ -37,7 +37,7 @@ class WordGenerator
             $letters = $this->getLettersFromString();
             $chars = $this->wordToChars($word);
 
-            $this->areAllTheLettersInTheWord($chars, $letters);
+            $this->checkLettersInWord($chars, $letters);
 
             if($this->isValidWord()){
                 $foundWords[] = $word;
@@ -74,7 +74,7 @@ class WordGenerator
      * @param array $chars
      * @param array $letters
      */
-    private function areAllTheLettersInTheWord(array $chars, array $letters): void
+    private function checkLettersInWord(array $chars, array $letters): void
     {
         foreach ($chars as $char) {
             if (($key = array_search($char, $letters)) !== false) {
