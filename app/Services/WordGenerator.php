@@ -5,9 +5,14 @@ namespace App\Services;
 class WordGenerator
 {
     private string $string;
+
     private int $length;
+
     private object $dictionary;
+
     private array $lettersFound = [];
+
+    private array $foundWords = [];
 
     public function __construct(Dictionary $dictionary)
     {
@@ -30,21 +35,11 @@ class WordGenerator
 
     public function getWords(): array
     {
-        $foundWords = [];
-        $dictionaryWords = $this->getDictionaryWords();
+        $this->findWordsFrom(
+            $this->getDictionaryWords()
+        );
 
-        foreach ($dictionaryWords as $word){
-            $letters = $this->getLettersFromString();
-            $chars = $this->wordToChars($word);
-
-            $this->checkLettersInWord($chars, $letters);
-
-            if($this->isValidWord()){
-                $foundWords[] = $word;
-            }
-        }
-
-        return $foundWords;
+        return $this->getFoundWords();
     }
 
     private function getLettersFromString(): array
@@ -82,5 +77,35 @@ class WordGenerator
                 unset($letters[$key]);
             }
         }
+    }
+
+    private function addToFoundWords($word)
+    {
+        $this->foundWords[] = $word;
+    }
+
+    /**
+     * @param array $dictionaryWords
+     */
+    private function findWordsFrom(array $dictionaryWords): void
+    {
+        foreach ($dictionaryWords as $word) {
+            $letters = $this->getLettersFromString();
+            $chars = $this->wordToChars($word);
+
+            $this->checkLettersInWord($chars, $letters);
+
+            if ($this->isValidWord()) {
+                $this->addToFoundWords($word);
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function getFoundWords(): array
+    {
+        return $this->foundWords;
     }
 }
