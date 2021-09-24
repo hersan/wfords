@@ -50,6 +50,7 @@ class WordGenerator
                     }
                 }else{
                     $isValid = false;
+                    break;
                 }
             }
 
