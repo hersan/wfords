@@ -40,4 +40,24 @@ class WordGeneratorTest extends TestCase
         $this->assertContains('gánster', $words);
 
     }
+
+    /** @test */
+    public function it_should_not_return_invalid_words()
+    {
+        $length = 7;
+        $string = 'TJEUINGRTSDA';
+
+        $dictionary = new Dictionary();
+
+        $generator = new WordGenerator($dictionary);
+        $words = $generator
+            ->wordsFrom($string)
+            ->withLength($length)
+            ->getWords();
+
+        $this->assertNotContains('caceria', $words);
+        $this->assertNotContains('zurrido', $words);
+        $this->assertNotContains('instrumento', $words);
+        $this->assertNotContains('yardero', $words);
+    }
 }

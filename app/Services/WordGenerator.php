@@ -12,7 +12,7 @@ class WordGenerator
 
     private array $lettersFound = [];
 
-    //private array $foundWords = [];
+    private array $foundWords = [];
 
     public function __construct(Dictionary $dictionary)
     {
@@ -35,50 +35,16 @@ class WordGenerator
 
     public function getWords(): array
     {
-        $dictionaryWords = $this->getDictionaryWords();
-        $foundWords = [];
-
-        foreach ($dictionaryWords as $word) {
-            $letters = $this->getLettersFromString();
-            $chars = $this->wordToChars($word);
-            $isValid = true;
-
-            foreach ($chars as $char) {
-                if(in_array($char, $letters)) {
-                    if (($key = array_search($char, $letters)) !== false) {
-                        unset($letters[$key]);
-                    }
-                }else{
-                    $isValid = false;
-                    break;
-                }
-            }
-
-            if ($isValid) {
-                $foundWords[] = $word;
-            }
-        }
-
-        return $foundWords;
-
-        /*$this->findWordsFrom(
+        $this->findWordsFrom(
             $this->getDictionaryWords()
         );
 
-        return $this->getFoundWords();*/
+        return $this->getFoundWords();
     }
 
-    private function getLettersFromString(): array
+    private function replaceSpecialChars(string $word) : string
     {
-        return str_split(strtolower($this->string));
-    }
-
-
-    private function wordToChars(string $word) : array
-    {
-        return str_split(
-            strtolower(str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], $word))
-        );
+        return strtolower(str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], $word));
     }
 
     private function getDictionaryWords(): array
@@ -91,49 +57,27 @@ class WordGenerator
         return count($this->lettersFound);
     }
 
-    /**
-     * @param array $chars
-     * @param array $letters
-     */
-    private function checkLettersInWord(array $chars, array $letters): void
-    {
-        foreach ($chars as $char) {
-            if(in_array($char, $letters)) {
-                if (($key = array_search($char, $letters)) !== false) {
-                    $this->lettersFound[] = $key;
-                    unset($letters[$key]);
-                }
-            }
-        }
-    }
-
-    private function addToFoundWords($word)
-    {
-        $this->foundWords[] = $word;
-    }
-
-    /**
-     * @param array $dictionaryWords
-     */
     private function findWordsFrom(array $dictionaryWords): void
     {
         foreach ($dictionaryWords as $word) {
-            $letters = $this->getLettersFromString();
-            $chars = $this->wordToChars($word);
-
-            $this->checkLettersInWord($chars, $letters);
-
-            if ($this->isValidWord()) {
+            if(preg_match_all($this->getPattern(), $this->replaceSpecialChars($word), $matches)) {
                 $this->addToFoundWords($word);
             }
         }
     }
 
-    /**
-     * @return array
-     */
     private function getFoundWords(): array
     {
         return $this->foundWords;
+    }
+
+    private function getPattern(): string
+    {
+        return "/^[" . strtolower($this->string) . "]+$/iU";
+    }
+
+    private function addToFoundWords($word)
+    {
+        $this->foundWords[] = $word;
     }
 }
